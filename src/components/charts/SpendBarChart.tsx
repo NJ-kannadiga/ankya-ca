@@ -13,6 +13,19 @@ type ThresholdConfig = {
   enabled: boolean
   value: number
 }
+const LAKH = 100_000
+const CRORE = 10_000_000
+
+const Y_TICKS = [
+  0 * LAKH,    // 0 L
+  10 * LAKH,   // 10 L
+  20 * LAKH,   // 20 L
+  40 * LAKH,   // 40 L
+  60 * LAKH,   // 60 L
+  80 * LAKH,   // 80 L
+  1 * CRORE,   // 1 Cr
+]
+
 
 type SpendBarChartProps = {
   data: {
@@ -38,6 +51,40 @@ export function SpendBarChart({
   Gtitle = "Spend Mix by Committee",
 }: SpendBarChartProps) {
   const isThresholdEnabled = threshold?.enabled === true
+const WrappedXAxisTick = ({ x, y, payload, width = 90 }: any) => {
+  const text = payload.value
+  const words = text.split(" ")
+
+  const lines: string[] = []
+  let currentLine = ""
+
+  words.forEach((word) => {
+    if ((currentLine + word).length <= 12) {
+      currentLine += (currentLine ? " " : "") + word
+    } else {
+      lines.push(currentLine)
+      currentLine = word
+    }
+  })
+
+  if (currentLine) lines.push(currentLine)
+
+  return (
+    <text
+      x={x}
+      y={y + 10}
+      textAnchor="middle"
+      fill="#475569"
+      fontSize={12}
+    >
+      {lines.map((line, index) => (
+        <tspan key={index} x={x} dy={index === 0 ? 0 : 14}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  )
+}
 
   // 🔁 Transform data only if threshold is enabled
   const chartData = isThresholdEnabled
@@ -56,7 +103,8 @@ export function SpendBarChart({
       }))
     : data
 
-  return (
+
+    return (
     <div className="bg-white rounded-xl shadow-sm p-6">
       {/* TITLE */}
       <h2 className="text-xl font-bold text-slate-700 mb-4 tracking-tight">
@@ -68,18 +116,26 @@ export function SpendBarChart({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>
             {/* X AXIS */}
-         <XAxis
+ <XAxis
   dataKey="name"
   interval={0}
-  tick={{ fontSize: 12, fill: "#475569" }}
-  height={60}
+  tick={<WrappedXAxisTick />}
+  height={80}   // important for multi-line
+
+    angle={-30} 
+
 />
 
             {/* Y AXIS */}
-            <YAxis
-              tickFormatter={formatINRShort}
-              width={80}
-            />
+<YAxis
+  domain={[0, 1 * CRORE]}   // 👈 must include 0
+  ticks={Y_TICKS}
+  tickFormatter={formatINRShort}
+  width={70}
+  tick={{ fontSize: 12, fill: "#475569" }}
+  allowDataOverflow
+/>
+
 
             {/* TOOLTIP */}
             <Tooltip
@@ -101,18 +157,18 @@ export function SpendBarChart({
                 />
               </>
             ) : (
-              <Bar dataKey="opex" fill="#000000" />
+              <Bar dataKey="opex" fill="#4E1C5A" minPointSize={6} />
             )}
 
             {/* CAPEX & AD-HOC */}
-            <Bar dataKey="capex" fill="#2f855a" />
-            <Bar dataKey="adhoc" fill="#a0aec0" />
+            <Bar dataKey="capex" fill="#E4B83E" minPointSize={6}/>
+            <Bar dataKey="adhoc" fill="#AC88D2" minPointSize={6}/>
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* LEGEND */}
-      <div className="mt-4 flex gap-6 text-xs text-slate-600 flex-wrap">
+      {/* <div className="mt-4 flex gap-6 text-xs text-slate-600 flex-wrap">
         {isThresholdEnabled ? (
           <>
             <span className="text-green-700">● OPEX (Within Threshold)</span>
@@ -123,7 +179,7 @@ export function SpendBarChart({
         )}
         <span>● CAPEX</span>
         <span>● AD-HOC</span>
-      </div>
+      </div> */}
     </div>
   )
 }

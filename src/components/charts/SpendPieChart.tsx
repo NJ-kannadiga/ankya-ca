@@ -8,9 +8,9 @@ import {
 } from "recharts"
 import {  formatINRShort } from "@/lib/utils";
 const DEFAULT_COLORS = [
-  "#000000",
-  "#16a34a",
-  "#a0aec0",
+  "#4E1C5A",
+  "#E4B83E",
+  "#AC88D2",
   "#dc2626",
   "#f59e0b",
 ]
@@ -20,6 +20,7 @@ export function SpendPieChart({
   title = "Overall Composition",
   centerLabel = "TOTAL",
   centerValue,
+  showlegend = true,
 }: SpendPieChartProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
@@ -77,7 +78,7 @@ export function SpendPieChart({
       </div>
 
       {/* LEGEND (AUTO) */}
-      <div className="mt-4 flex flex-wrap gap-6 text-xs text-slate-600">
+     { showlegend && <div className="mt-4 flex flex-wrap gap-6 text-xs text-slate-600">
         {data.map((slice, index) => (
           <div
             key={slice.name}
@@ -94,7 +95,7 @@ export function SpendPieChart({
             <span className="font-medium">{slice.name}</span>
           </div>
         ))}
-      </div>
+      </div>}
     </div>
   )
 }

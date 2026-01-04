@@ -1,14 +1,13 @@
 import React from "react"
+import { KPI_COLORS } from "@/lib/kpiColors"
 
 type KpiCardProps = {
   title: string
   amount: any
   percentText?: string
   percentValue?: string
-  amountColor?: string
+  colorKey?: keyof typeof KPI_COLORS
   percentColor?: string
-  isPositive?: boolean
-  data?:[]
 }
 
 export function KpiCard({
@@ -16,44 +15,61 @@ export function KpiCard({
   amount,
   percentText,
   percentValue,
-  amountColor = "text-slate-900",
-  isPositive = false,
-  percentColor= "text-orange-600",
-  data
+  colorKey = "total",
+  percentColor = "text-orange-600",
 }: KpiCardProps) {
+  const accentColor = KPI_COLORS[colorKey] ?? KPI_COLORS.total
+
   return (
-    <div  className="
-    bg-white rounded-xl shadow-sm hover:shadow-md transition
+    <div
+  className="
+    bg-white rounded-xl
+    shadow-sm
     p-5 min-h-[120px]
     flex flex-col justify-between
 
-    w-fit              /* 👈 key */
-    min-w-[350px]      /* 👈 safe minimum */
-    max-w-[320px]      /* 👈 prevent wide card */
-  "
->
-      
-      {/* TOP SECTION */}
-      <div>
-        {/* TITLE */}
-        <p className="text-xs tracking-wide text-slate-400 font-medium uppercase mb-2">
-          {title}
-        </p>
+    w-fit min-w-[320px] max-w-[350px]
 
-        {/* AMOUNT */}
-    {  title.toLowerCase() !== 'community alert' && <div className={`text-2xl font-bold ${amountColor}`}>
-          ₹ {amount}
-        </div>}
-         {  title.toLowerCase() == 'community alert' && <div className={`text-2xl font-bold ${amountColor}`}>
-        {amount}
-        </div>}
+    /* ✅ HOVER ANIMATION */
+    transform-gpu
+    transition-all duration-300 ease-out
+    hover:-translate-y-2
+    hover:scale-[1.04]
+    hover:shadow-2xl
+  "
+  style={{
+    borderTop: `4px solid ${accentColor}`,
+  }}
+>
+      {/* TITLE (FIXED OPACITY & WEIGHT) */}
+    <p className="
+  text-sm
+  font-bold
+  text-slate-900
+  tracking-wide
+  uppercase
+  mb-2
+">
+  {title}
+</p>
+
+      {/* AMOUNT */}
+      <div
+        className="text-2xl font-bold"
+        style={{ color: accentColor }}
+      >
+        {title.toLowerCase() === "community alert"
+          ? amount
+          : `₹ ${amount}`}
       </div>
 
-      {/* BOTTOM SECTION (ALWAYS VISIBLE) */}
+      {/* FOOTER */}
       <div className="mt-4 flex items-center gap-2 text-sm">
         {percentValue && (
-          <span className={`px-2 py-0.5 rounded-full ${percentColor} text-xs font-medium`}>
-             {percentValue}
+          <span
+            className={`px-2 py-0.5 rounded-full ${percentColor} text-xs font-medium`}
+          >
+            {percentValue}
           </span>
         )}
 

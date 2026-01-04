@@ -25,67 +25,61 @@ type DashboardCardsProps = {
 }
 
 export function DashboardCards({ data }: DashboardCardsProps) {
-  const ALLOWED_POPUP_TITLES = [
-  "Total Budget Approved",
-  "Total Expenditure",
-  "Unspent Balance",
-  "Community Alert",
-]
-
-
-
-
-    const [selectedCard, setSelectedCard] = useState<any>(null)
+  const [selectedCard, setSelectedCard] = useState<any>(null)
 
   return (
     <>
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
-      {data.map((item, index) => (
-<div
-  key={index}
-  className={`cursor-pointer ${
-    ALLOWED_POPUP_TITLES.includes(item.title) ? "" : "pointer-events-none"
-  }`}
-  onClick={() => {
-    if (!ALLOWED_POPUP_TITLES.includes(item.title)) return
-    setSelectedCard(item)
-  }}
->
-          <KpiCard
-            title={item.title}
-            amount={item.title.toLowerCase() === 'community alert' ? item.amount : formatINRShort(item.amount)}
-            percentText={item.percentText ?? item.percentage}
-            percentValue={item.percentValue}
-            isPositive={item.isPositive}
-            amountColor={item.amountColor}
-          />
-        </div>
-      ))}
-    </div>
+      <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
+        {data.map((item, index) => (
+          <div
+            key={index}
+            className="cursor-pointer"
+            onClick={() => setSelectedCard(item)}
+          >
+            <KpiCard
+              title={item.title}
+              amount={
+                item.title.toLowerCase() === "community alert"
+                  ? item.amount
+                  : formatINRShort(item.amount)
+              }
+              percentText={item.percentText ?? item.percentage}
+              percentValue={item.percentValue}
+              isPositive={item.isPositive}
+              amountColor={item.amountColor}
+              colorKey={item.colorKey}
+            />
+          </div>
+        ))}
+      </div>
 
-
-{/* POPUP */}
+      {/* POPUP */}
       <Modal
         open={!!selectedCard}
         title={selectedCard?.title}
         onClose={() => setSelectedCard(null)}
       >
         {/* BAR GRAPH */}
-  {selectedCard?.title !== "Community Alert" ? (
-  <SpendingByCommitteeBar
-    title={`${selectedCard?.title} – Breakdown`}
-    data={selectedCard?.data}
-  />
-) : null}
+        {selectedCard?.data?.length ? (
+          <SpendingByCommitteeBar
+            title={`${selectedCard?.title} – Breakdown`}
+            data={selectedCard.data}
+          />
+        ) : (
+          <p className="text-sm text-slate-500">
+            No breakdown data available.
+          </p>
+        )}
 
         {/* TABLE */}
-     <div className="mt-8">
-  <CommonTable
-    title={`${selectedCard?.title} Details`}
-    columns={generateColumnsFromData(selectedCard?.data || [])}
-    data={generateRowsFromData(selectedCard?.data || [])}
-  />
-</div>
-      </Modal></>
+        <div className="mt-8">
+          <CommonTable
+            title={`${selectedCard?.title} Details`}
+            columns={generateColumnsFromData(selectedCard?.data || [])}
+            data={generateRowsFromData(selectedCard?.data || [])}
+          />
+        </div>
+      </Modal>
+    </>
   )
 }

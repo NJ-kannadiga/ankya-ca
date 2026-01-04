@@ -86,44 +86,47 @@ interface SummaryItem {
     { name: "Ad-Hoc", value: totals["Ad-Hoc"] },
   ];
 }
- function parsePaymentDate(dateStr?: string): Date | null {
-  if (!dateStr || typeof dateStr !== "string") return null
+function parsePaymentDate(dateValue?: string | number): Date | null {
+  if (dateValue === null || dateValue === undefined) return null
 
-  const trimmed = dateStr.trim()
-
-  // ===============================
-  // Format 1: DD-MMM-YY  (03-Dec-25)
-  // ===============================
-  if (trimmed.includes("-")) {
-    const parts = trimmed.split("-")
-    if (parts.length === 3) {
-      const [dayStr, monStr, yearStr] = parts
-
-      const monthMap: Record<string, number> = {
-        Jan: 0, Feb: 1, Mar: 2,
-        Apr: 3, May: 4, Jun: 5,
-        Jul: 6, Aug: 7, Sep: 8,
-        Oct: 9, Nov: 10, Dec: 11,
-      }
-
-      const month = monthMap[monStr]
-      if (month === undefined) return null
-
-      const day = Number(dayStr)
-      const year =
-        yearStr.length === 2 ? Number(`20${yearStr}`) : Number(yearStr)
-
-      if (!isFinite(day) || !isFinite(year)) return null
-
-      return new Date(year, month, day)
-    }
+  /* ===============================
+     CASE 1: Excel serial number
+     =============================== */
+  if (typeof dateValue === "number" && isFinite(dateValue)) {
+    const excelEpoch = new Date(1899, 11, 30)
+    return new Date(excelEpoch.getTime() + dateValue * 86400000)
   }
 
-  // ===============================
-  // Format 2: DD/MM/YYYY  (15/12/2025)
-  // ===============================
-  if (trimmed.includes("/")) {
-    const parts = trimmed.split("/")
+  if (typeof dateValue !== "string") return null
+
+  const trimmed = dateValue.trim()
+  if (!trimmed) return null
+
+  /* ===============================
+     CASE 2: DD-MMM-YY (case-insensitive)
+     e.g. 01-jan-25, 01-JAN-25
+     =============================== */
+  if (/[a-zA-Z]/.test(trimmed) && trimmed.includes("-")) {
+    const [dayStr, monStr, yearStr] = trimmed.split("-")
+
+    const monthMap: Record<string, number> = {
+      jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+      jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+    }
+
+    const month = monthMap[monStr.toLowerCase()]
+    const day = Number(dayStr)
+    const year = yearStr.length === 2 ? 2000 + Number(yearStr) : Number(yearStr)
+
+    if (!isFinite(day) || month === undefined || !isFinite(year)) return null
+    return new Date(year, month, day)
+  }
+
+  /* ===============================
+     CASE 3: DD-MM-YYYY or DD/MM/YYYY
+     =============================== */
+  if (trimmed.includes("-") || trimmed.includes("/")) {
+    const parts = trimmed.split(/[-/]/)
     if (parts.length === 3) {
       const [dayStr, monthStr, yearStr] = parts
 
@@ -131,14 +134,7 @@ interface SummaryItem {
       const month = Number(monthStr) - 1
       const year = Number(yearStr)
 
-      if (
-        !isFinite(day) ||
-        !isFinite(month) ||
-        !isFinite(year)
-      ) {
-        return null
-      }
-
+      if (!isFinite(day) || !isFinite(month) || !isFinite(year)) return null
       return new Date(year, month, day)
     }
   }
@@ -146,6 +142,15 @@ interface SummaryItem {
   return null
 }
 
+function formatDate(date: Date | null) {
+  return date
+    ? date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : ""
+}
 
 function getQuarterFromDate(date) {
   if (!date || isNaN(date)) return null;
@@ -247,106 +252,7 @@ const handleFileChange = (e) => {
 };
 
 
-// const handleFileChange = (e) => {
-//   const file = e.target.files?.[0];
-//   if (!file) return;
 
-//   const reader = new FileReader();
-
-//   reader.onload = async (event) => {
-//     try {
-//       const binaryData = event.target.result;
-//       const workbook = XLSX.read(binaryData, { type: "binary" });
-
-//       /* ============================
-//          ✅ TAKE SHEETS 0, 1, 2
-//       ============================ */
-//       const targetSheetNames = workbook.SheetNames.slice(0, 3);
-
-//       const MAX_ROWS = 5000;
-//       const BATCH_SIZE = 100;
-
-//       let allRows = [];
-//       let finalHeaders = new Set();
-
-//       for (const sheetName of targetSheetNames) {
-//         const sheet = workbook.Sheets[sheetName];
-//         if (!sheet) continue;
-
-//         const sheetData = XLSX.utils.sheet_to_json(sheet, {
-//           header: 1,
-//           defval: "",
-//         });
-
-//         if (!sheetData.length) continue;
-
-//         const rawHeaders = sheetData[0];
-//         const headers = rawHeaders
-//           .map((h) => String(h).trim())
-//           .filter(Boolean);
-
-//         headers.forEach((h) => finalHeaders.add(h));
-
-//         const totalRows = Math.min(sheetData.length - 1, MAX_ROWS);
-//         let processedRows = 0;
-
-//         for (let i = 1; i <= totalRows; i += BATCH_SIZE) {
-//           const batch = sheetData.slice(i, i + BATCH_SIZE);
-
-//           batch.forEach((row) => {
-//             const obj = {};
-//             let hasData = false;
-
-//             rawHeaders.forEach((header, colIndex) => {
-//               const key = String(header).trim();
-//               if (!key) return;
-
-//               const value = row[colIndex] ?? "";
-//               if (value !== "") hasData = true;
-
-//               obj[key] = value;
-//             });
-
-//             /* ✅ QUARTER LOGIC */
-//             const paymentDate = parsePaymentDate(obj["Payment Date"]);
-//             const quarter = getQuarterFromDate(paymentDate);
-//             if (quarter) obj.Quarter = quarter;
-
-//             if (hasData) allRows.push(obj);
-//           });
-
-//           processedRows += batch.length;
-
-//           const percent = Math.min(
-//             90,
-//             Math.round((processedRows / totalRows) * 100)
-//           );
-//           console.log(`Processing ${sheetName}: ${percent}%`);
-
-//           await new Promise((res) => setTimeout(res, 5));
-//         }
-//       }
-
-//       /* ============================
-//          ✅ FINAL MERGED DATA
-//       ============================ */
-//       const finalData = {
-//         columns: [...finalHeaders, "Quarter"],
-//         rows: allRows,
-//       };
-
-//       console.log("Final Parsed Data (Sheets 0,1,2):", finalData);
-
-//       setExcelData(finalData);
-//       onExcelParsed?.(finalData);
-
-//     } catch (err) {
-//       console.error("Excel parsing error:", err);
-//     }
-//   };
-
-//   reader.readAsBinaryString(file);
-// };
 
 
 
@@ -407,10 +313,10 @@ const handleFileChange = (e) => {
       {/* RIGHT SECTION */}
       <div className="flex items-center gap-3">
         {/* EXPORT */}
-        <button className="flex items-center gap-2 text-sm px-3 py-1.5 border border-black rounded hover:bg-slate-100 transition">
+        {/* <button className="flex items-center gap-2 text-sm px-3 py-1.5 border border-black rounded hover:bg-slate-100 transition">
           <Download size={16} />
           Export
-        </button>
+        </button> */}
 
         {/* PROFILE */}
         <div className="h-9 w-9 rounded-full bg-green-100 flex items-center justify-center">
@@ -419,8 +325,7 @@ const handleFileChange = (e) => {
 
         <div className="leading-tight text-left">
           <p className="text-sm font-medium text-slate-800">
-            Sankya Admin
-          </p>
+Gagan Shetty           </p>
           <p className="text-xs text-slate-500">
             Chartered Accountant
           </p>

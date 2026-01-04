@@ -25,6 +25,8 @@ interface BarItem {
   adhoc: number;
 }
 
+
+
 // --- Helper Functions ---
 function formatToCrL(value: number): string {
 
@@ -56,17 +58,17 @@ export default function Overview() {
       const amt = Number(r["Total Expense Paid"]) || 0;
       if (r.Nature === "Operating") operating += amt;
       else if (r.Nature === "Capex") capex += amt;
-      else if (r.Nature === "Ad-Hoc") adhoc += amt;
+      else if (r.Nature?.toLowerCase() === "ad-hoc") adhoc += amt;
     });
 
     const total = operating + capex + adhoc;
     const qLabel = filteredRows[0]?.Quarter ? `(${filteredRows[0].Quarter})` : "";
 
     return [
-      { title: `Total Spend ${qLabel}`, rawAmount: total, amount: formatToCrL(total), percentValue: "100%", isPositive: true },
-      { title: "OPEX Actuals", rawAmount: operating, amount: formatToCrL(operating), percentValue: `${percent(operating, total)} of total`, isPositive: true },
-      { title: "CAPEX Actuals", rawAmount: capex, amount: formatToCrL(capex), percentText: `${percent(capex, total)} of total`, amountColor: "text-green-700" },
-      { title: "Ad-Hoc Spend", rawAmount: adhoc, amount: formatToCrL(adhoc), percentText: `${percent(adhoc, total)} of total`, amountColor: "text-orange-600" },
+      { title: `Total Spend ${qLabel}`, rawAmount: total, amount: formatToCrL(total), percentValue: "100%", isPositive: true, colorKey: total },
+      { title: "OPEX Actuals", rawAmount: operating, amount: formatToCrL(operating), percentValue: `${percent(operating, total)} of total`, isPositive: true, colorKey: "opex" },
+      { title: "CAPEX Actuals", rawAmount: capex, amount: formatToCrL(capex), percentText: `${percent(capex, total)} of total`, amountColor: "text-green-700", colorKey: "capex" },
+      { title: "Ad-Hoc Spend", rawAmount: adhoc, amount: formatToCrL(adhoc), percentText: `${percent(adhoc, total)} of total`, amountColor: "text-orange-600", colorKey: "adhoc" },
     ];
   }, [filteredRows]);
 
@@ -105,17 +107,20 @@ export default function Overview() {
         <DashboardCards data={cards} />
       </div>
 
-      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <SpendBarChart data={barData} />
-        </div>
+   <div className="mt-12 grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <div className="lg:col-span-3">
+    <SpendBarChart data={barData} />
+  </div>
 
-        <SpendPieChart
-          title="Overall Composition"
-          data={pieData}
-          centerValue={cards[0].amount}
-        />
-      </div>
+  <div className="lg:col-span-1">
+    <SpendPieChart
+      title="Overall Composition"
+      data={pieData}
+      centerValue={cards[0].amount}
+      showlegend={false}
+    />
+  </div>
+</div>
 
       <CommitteeSnapshots data={barData} />
     </>
