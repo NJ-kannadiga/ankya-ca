@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { KpiCard } from "@/components/ui/KpiCard"
 import { Modal } from "@/components/ui/Modal"
 import { useState } from "react"

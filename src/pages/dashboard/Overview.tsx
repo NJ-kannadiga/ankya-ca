@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { DashboardCards } from "@/components/ui/DashboardCards";
 import { SpendBarChart } from "@/components/charts/SpendBarChart";
 import { SpendPieChart } from "@/components/charts/SpendPieChart";

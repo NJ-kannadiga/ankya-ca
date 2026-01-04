@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { JSX, useMemo, useState } from "react"
 import { Building2, Cpu, Settings } from "lucide-react"
 

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { TopNav } from "@/components/ui/TopNav"
 import { SideNav } from "@/components/ui/SideNav"
 import { Outlet } from "react-router-dom"

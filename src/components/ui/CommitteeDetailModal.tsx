@@ -3,6 +3,8 @@ import { Modal } from "@/components/ui/Modal"
 import { SpendingByCommitteeBar } from "@/components/charts/SpendingByCommitteeBar"
 import { SpendTrendLineChart } from "./SpendTrendLineChart"
 import { CommonTable } from "@/components/table/CommonTable"
+import { ReactNode } from "react"
+
 // import { Committee } from "./committee.types"
 type StatusType = "healthy" | "warning" | "risk"
 
@@ -17,7 +19,7 @@ type Props = {
   id: number
   title: string
   subtitle?: string
-  icon?: JSX.Element
+icon?: ReactNode
 
   // Card values
   status?: string

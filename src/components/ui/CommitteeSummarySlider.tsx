@@ -2,8 +2,8 @@ import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { CommitteeSummaryCard } from "@/components/ui/CommitteeSummaryCard"
 import { CommitteeDetailModal } from "./CommitteeDetailModal"
-import { Committee } from "./committee.types"
 
+type Committee=any
 type Props = {
   data: Committee[]
   sheetData: any

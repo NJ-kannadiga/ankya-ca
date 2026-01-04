@@ -10,7 +10,7 @@ import { Navigate } from "react-router-dom"
 import DashboardLayout from "./pages/dashboard/DashboardLayout"
 import Overview from "./pages/dashboard/Overview"
 
-export default function App() {
+function App() {
   return (
    <Routes>
       <Route path="/" element={<Home />} />
@@ -37,3 +37,4 @@ export default function App() {
     </Routes>
   )
 }
+export default App

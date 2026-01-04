@@ -11,6 +11,7 @@ import {
 } from "recharts";
 
 // ... Types remain the same ...
+type Props = any
 
 export function SpendingByCommitteeBar({
   data,

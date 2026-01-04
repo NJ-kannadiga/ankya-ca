@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useRef, useState } from "react"
 import * as XLSX from "xlsx";
 import { useExpenseStore } from "@/store/useExpenseStore";

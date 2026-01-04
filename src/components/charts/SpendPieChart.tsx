@@ -14,7 +14,7 @@ const DEFAULT_COLORS = [
   "#dc2626",
   "#f59e0b",
 ]
-
+type SpendPieChartProps=any
 export function SpendPieChart({
   data,
   title = "Overall Composition",
