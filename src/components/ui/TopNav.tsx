@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import * as XLSX from "xlsx";
 import { useExpenseStore } from "@/store/useExpenseStore";
+import logo from "@/assets/logo.jpeg"
 
 import { Upload, Download, ChevronDown, User } from "lucide-react"
 import {
@@ -356,7 +357,7 @@ const handleFileChange = (e) => {
         {/* LOGO */}
         <div className="flex items-center gap-3">
           <img
-            src="/src/assets/logo.jpeg"
+            src={logo}
             alt="Sankya"
             className="h-8 w-8 object-contain"
           />
