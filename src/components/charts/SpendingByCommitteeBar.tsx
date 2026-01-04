@@ -9,6 +9,7 @@ import {
   ReferenceLine,
   CartesianGrid, // Added for grid lines
 } from "recharts";
+import { formatINRShort } from "@/lib/utils";
 
 // ... Types remain the same ...
 type Props = any
@@ -69,7 +70,7 @@ const activeKeys = {
               />
 
               <Tooltip
-                formatter={(value: number) => `₹${Math.abs(value)} L`}
+                formatter={(value: number) => `₹${formatINRShort(Math.abs(value))}`}
                 cursor={{ fill: "#f1f5f9" }}
               />
 
