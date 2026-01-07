@@ -14,7 +14,6 @@ export function TreemapChart({ data, title }) {
   value: item.utilized,  // must be "value"
 }))}
           dataKey="value"
-          ratio={4 / 3}
           stroke="#fff"
           fill="#4E1C5A"
         >
