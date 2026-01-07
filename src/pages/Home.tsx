@@ -11,7 +11,9 @@ export default function Home() {
 
       <div className="px-6 py-12">
         <h1 className="text-xl font-semibold text-slate-800 mb-8">
-          Welcome to Sankya CA
+          Welcome to    <span className="text-lg font-semibold text-[#4E1C5A]">
+            ANKYA
+          </span>
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl">
