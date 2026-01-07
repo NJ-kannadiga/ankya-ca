@@ -10,7 +10,7 @@ import { SpendPieChart } from "@/components/charts/SpendPieChart"
 
 import { JSX, useMemo, useState } from "react"
 import { Building2, Cpu, Settings } from "lucide-react"
-
+import {generateColumnsFromData,generateRowsFromData} from "@/lib/utils"  
 // Store & Utils
 import { useExpenseStore } from "@/store/useExpenseStore"
 import { formatINRShort } from "@/lib/utils"
@@ -29,11 +29,11 @@ const cards1 = useMemo(() => {
   }
 
   // 1. Calculate base values ONCE for efficiency
-  const totalSpent = excelData.sheet0.rows
+  const totalSpent = excelData?.sheet0.rows
     .filter((r: any) => r.Nature?.toLowerCase() === "capex" && r.Quarter === selectedQuarter)
     .reduce((sum: number, row: any) => sum + (Number(row["Total Expense Paid"]) || 0), 0);
 
-  const approved = excelData.sheet2.rows.find((r: any) => r.Nature?.toLowerCase() === "total")?.Amount || 0;
+  const approved = excelData?.sheet2.rows.find((r: any) => r.Nature?.toLowerCase() === "total")?.Amount || 0;
 
   // 2. Derive logic-based values
   const unapprovedAmt = Math.max(0, totalSpent - approved);
@@ -127,30 +127,7 @@ type Expense = {
   amount: number
 }
 
-function generateColumnsFromData(data: any[]) {
-  if (!data || !data.length) return []
 
-  const keys = Object.keys(data[0])
-
-  return [
-    { key: "id", label: "SL.NO" },
-    ...keys.map((key) => ({
-      key,
-      label: key
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
-    })),
-  ]
-}
-
-function generateRowsFromData(data: any[]) {
-  if (!data || !data.length) return []
-
-  return data.map((item, index) => ({
-    id: index + 1,
-    ...item,
-  }))
-}
 
 return (
   <>
@@ -217,12 +194,12 @@ return (
     </div>
 
     {/* THRESHOLD BAR + TABLE */}
-    { excelData.sheet0.rows.length > 0 && <div className="mt-12 grid grid-cols-1 gap-12">
+    { excelData?.sheet0?.rows?.length > 0 && <div className="mt-12 grid grid-cols-1 gap-12">
 
       <CommonTable
         title="Capex Composition"
-        columns={generateColumnsFromData(excelData.sheet0.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex"))}
-        data={generateRowsFromData(excelData.sheet0.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex"))}
+        columns={generateColumnsFromData(excelData?.sheet0?.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex"))}
+        data={generateRowsFromData(excelData?.sheet0?.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex"))}
         onRowClick={(row) => console.log("Clicked:", row)}
       />
     </div>}

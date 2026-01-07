@@ -36,10 +36,28 @@ function getWeekNumber(d: Date) {
 }
 
 /* ================= UPDATED AGGREGATION ================= */
- function parsePaymentDate(dateStr?: string): Date | null {
-  if (!dateStr || typeof dateStr !== "string") return null
+function parsePaymentDate(dateStr?: string | number): Date | null {
+  if (dateStr === null || dateStr === undefined) return null
 
-  const trimmed = dateStr.trim()
+  // ---------- EXCEL SERIAL DATE (Number) ----------
+  if (typeof dateStr === "number" && !isNaN(dateStr)) {
+    // Excel dates assume 1900 leap year bug so we subtract 1
+    // Excel day 1 = 1900-01-01 → JS time
+    const excelEpoch = new Date(1900, 0, 1)
+    const jsDate = new Date(excelEpoch.getTime() + (dateStr - 2) * 86400000)
+    return jsDate
+  }
+
+  // If string contains only digits (no slash/dash), try number parse
+  const trimmed = String(dateStr).trim()
+
+  if (/^\d+$/.test(trimmed)) {
+    const n = Number(trimmed)
+    if (!isNaN(n)) {
+      const excelEpoch = new Date(1900, 0, 1)
+      return new Date(excelEpoch.getTime() + (n - 2) * 86400000)
+    }
+  }
 
   // ===============================
   // Format 1: DD-MMM-YY  (03-Dec-25)
@@ -48,7 +66,6 @@ function getWeekNumber(d: Date) {
     const parts = trimmed.split("-")
     if (parts.length === 3) {
       const [dayStr, monStr, yearStr] = parts
-
       const monthMap: Record<string, number> = {
         Jan: 0, Feb: 1, Mar: 2,
         Apr: 3, May: 4, Jun: 5,
@@ -81,11 +98,7 @@ function getWeekNumber(d: Date) {
       const month = Number(monthStr) - 1
       const year = Number(yearStr)
 
-      if (
-        !isFinite(day) ||
-        !isFinite(month) ||
-        !isFinite(year)
-      ) {
+      if (!isFinite(day) || !isFinite(month) || !isFinite(year)) {
         return null
       }
 
@@ -95,6 +108,7 @@ function getWeekNumber(d: Date) {
 
   return null
 }
+
 
 function aggregateData(rows: ExpenseRow[], level: Level) {
   const map = new Map<string, any>()

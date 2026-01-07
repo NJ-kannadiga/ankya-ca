@@ -4,9 +4,13 @@ import { resolve } from "path"
 
 export default defineConfig({
   plugins: [react()],
+  assetsInclude: ['**/*.xlsx'], // <--- Add this line
   resolve: {
+    
+
     alias: {
       "@": resolve(__dirname, "src"),
+      
     },
   },
 })

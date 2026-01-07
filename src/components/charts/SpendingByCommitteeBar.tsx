@@ -17,6 +17,7 @@ type Props = any
 export function SpendingByCommitteeBar({
   data,
   title = "Spending by Committee",
+  className
 }: Props) {
 const activeKeys = {
   budget: data?.some(d => (d.budget ?? 0) !== 0),
@@ -34,10 +35,10 @@ const activeKeys = {
   const chartHeight = Math.max(400, data?.length * rowHeight);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 w-full">
+    <div className={`bg-white rounded-xl shadow-sm p-6 w-full ${className}`}>
       <h2 className="text-lg font-semibold text-slate-900 mb-4">{title}</h2>
 
-      <div className="w-full overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
+      <div className="w-full overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
         <div style={{ height: `${chartHeight}px`, width: "100%" }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -74,20 +75,7 @@ const activeKeys = {
                 cursor={{ fill: "#f1f5f9" }}
               />
 
-{/* ... inside BarChart ... */}
 
-{/* <Legend
-  verticalAlign="top"
-  align="right"
-  height={40}
-  iconType="circle"
-  payload={[
-    ...(activeKeys.budget && !hasRemain ? [{ value: 'Budget', type: 'circle', color: '#93c5fd' }] : []),
-    ...(activeKeys.utilized && !hasRemain ? [{ value: 'Actual', type: 'circle', color: '#1e3a8a' }] : []),
-    ...(activeKeys.remain && hasRemain ? [{ value: 'Remaining', type: 'circle', color: '#16a34a' }] : []),
-    ...(activeKeys.overUtilized && hasRemain ? [{ value: 'Over Utilized', type: 'circle', color: '#ef4444' }] : []),
-  ].filter(Boolean)} // Ensures no empty slots
-/> */}
               {(hasRemain || hasOverUtilized) && (
                 <ReferenceLine x={0} stroke="#94a3b8" strokeWidth={2} />
               )}

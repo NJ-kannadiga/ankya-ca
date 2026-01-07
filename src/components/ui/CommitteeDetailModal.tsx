@@ -4,7 +4,7 @@ import { SpendingByCommitteeBar } from "@/components/charts/SpendingByCommitteeB
 import { SpendTrendLineChart } from "./SpendTrendLineChart"
 import { CommonTable } from "@/components/table/CommonTable"
 import { ReactNode } from "react"
-
+import { parsePaymentDate ,formatDate} from "@/lib/utils"
 // import { Committee } from "./committee.types"
 type StatusType = "healthy" | "warning" | "risk"
 
@@ -58,7 +58,19 @@ type BarData = {
   utilized: number
 }
 export function CommitteeDetailModal({ open, sheetData, onClose, committee }: Props) {
+sheetData=sheetData.map((row: any) => {
+  const rawDate = row["Payment Date"];
+const parsedDate = parsePaymentDate(rawDate);
+
+  return {
+    ...row,
+    // If parsing succeeds, format it. If it fails, keep the original value.
+    "Payment Date": parsedDate ? formatDate(parsedDate) : rawDate,
+  };
+
+});
 console.log(sheetData,"[][][]")
+
 function generateColumnsFromData(data: any[]) {
   if (!data || !data.length) return []
 
@@ -232,17 +244,24 @@ const ringColor: Record<string, string> = {
         {/* BODY */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
 
-          <div className="grid lg:grid-cols-4 gap-6">
-            <div className="lg:col-span-3 bg-white border rounded-xl p-6">
-              <h3 className="text-sm font-semibold mb-4">Spend Over Time</h3>
-<SpendTrendLineChart rows={sheetData} />
-            </div>
+<div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  {/* LEFT — Spend Over Time (7/12) */}
+  <div className="lg:col-span-7 bg-white border rounded-xl p-6">
+    <h3 className="text-sm font-semibold mb-4">Spend Over Time</h3>
+    <SpendTrendLineChart rows={sheetData} />
+  </div>
 
-            <SpendingByCommitteeBar
-              title="Category Breakdown"
-              data={buildClassification1BarData(sheetData)}
-            />
-          </div>
+  {/* RIGHT — Bar Chart (5/12) */}
+  <div className="lg:col-span-5 bg-white border rounded-xl p-6">
+    <h3 className="text-sm font-semibold mb-4">Category Breakdown</h3>
+    <SpendingByCommitteeBar
+      title=""
+      data={buildClassification1BarData(sheetData)}
+    />
+  </div>
+</div>
+
+
 
           <CommonTable
             title="Transactions"

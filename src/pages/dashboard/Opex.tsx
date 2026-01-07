@@ -12,7 +12,7 @@ import { DashboardCards } from "@/components/ui/DashboardCards"
 import { SpendPieChart } from "@/components/charts/SpendPieChart"
 import { SpendingByCommitteeBar } from "@/components/charts/SpendingByCommitteeBar"
 import { CommitteeSummarySlider } from "@/components/ui/CommitteeSummarySlider"
-
+import { TreemapChart } from "@/components/ui/treemap"
 // Types
 type Expense = {
   date: string
@@ -233,25 +233,43 @@ setSheetData(sheet0Rows)
       </div>
 
       {/* CHARTS SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* PIE CHART */}
-        <SpendPieChart
-          title="Spend vs Balance"
-          data={[
-            { name: "Spend", value: Number(totalSpend), color: totalSpend > 0 ? "#dc2626" : DEFAULT_CHART_COLOR },
-            { name: "Balance", value: Number(unspentBal), color: unspentBal > 0 ? "#16a34a" : DEFAULT_CHART_COLOR },
-          ]}
-          centerValue={totalBudgetValue}
-        />
+     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+  {/* LEFT COLUMN: Pie + Treemap stacked */}
+  <div className="flex flex-col gap-6 lg:col-span-1">
+    {/* Pie Chart */}
+    <SpendPieChart
+      title="Spend vs Balance"
+      data={[
+        {
+          name: "Spend",
+          value: Number(totalSpend),
+          color: totalSpend > 0 ? "#dc2626" : DEFAULT_CHART_COLOR,
+        },
+        {
+          name: "Balance",
+          value: Number(unspentBal),
+          color: unspentBal > 0 ? "#16a34a" : DEFAULT_CHART_COLOR,
+        },
+      ]}
+      centerValue={totalBudgetValue}
+    />
 
-        {/* BAR CHART */}
-        <div className="lg:col-span-2">
-          <SpendingByCommitteeBar 
-            data={barDataVal} 
-            title="Spending by Committee" 
-          />
-        </div>
-      </div>
+    {/* Treemap (stacked below Pie) */}
+      <TreemapChart data={cards.find((c) => c.title === "Total Expenditure")?.data} title="Classification Treemap" />
+
+   
+  </div>
+
+  {/* RIGHT COLUMN: Bar Chart */}
+  <div className="lg:col-span-2 flex flex-col">
+    <SpendingByCommitteeBar
+      data={barDataVal}
+      title="Spending by Committee"
+      className="flex-1 h-full"
+    />
+  </div>
+</div>
+
 
       {/* COMMITTEE SLIDER */}
       {committeeDataVal.length > 0 && (

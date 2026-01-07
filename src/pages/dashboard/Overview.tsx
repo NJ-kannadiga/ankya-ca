@@ -66,9 +66,9 @@ export default function Overview() {
 
     return [
       { title: `Total Spend ${qLabel}`, rawAmount: total, amount: formatToCrL(total), percentValue: "100%", isPositive: true, colorKey: total },
-      { title: "OPEX Actuals", rawAmount: operating, amount: formatToCrL(operating), percentValue: `${percent(operating, total)} of total`, isPositive: true, colorKey: "opex" },
-      { title: "CAPEX Actuals", rawAmount: capex, amount: formatToCrL(capex), percentText: `${percent(capex, total)} of total`, amountColor: "text-green-700", colorKey: "capex" },
-      { title: "Ad-Hoc Spend", rawAmount: adhoc, amount: formatToCrL(adhoc), percentText: `${percent(adhoc, total)} of total`, amountColor: "text-orange-600", colorKey: "adhoc" },
+      { title: "OPEX Actuals", rawAmount: operating, amount: formatToCrL(operating), percentValue: `${percent(operating, total)} Of Total`, isPositive: true, colorKey: "opex" },
+      { title: "CAPEX Actuals", rawAmount: capex, amount: formatToCrL(capex), percentValue: `${percent(capex, total)} Of Total`,  isPositive: true, colorKey: "capex" },
+      { title: "Ad-Hoc Spend", rawAmount: adhoc, amount: formatToCrL(adhoc), percentValue: `${percent(adhoc, total)} Of Total`, isPositive: true, colorKey: "adhoc" },
     ];
   }, [filteredRows]);
 

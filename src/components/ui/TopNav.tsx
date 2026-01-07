@@ -1,9 +1,12 @@
 // @ts-nocheck
 
-import { useRef, useState } from "react"
+import { useRef, useState,useEffect } from "react"
 import * as XLSX from "xlsx";
 import { useExpenseStore } from "@/store/useExpenseStore";
 import logo from "@/assets/logo.jpeg"
+import excel from "@/assets/BLF-Q3.xlsx"
+
+
 
 import { Upload, Download, ChevronDown, User } from "lucide-react"
 import {
@@ -32,7 +35,11 @@ export function TopNav({ onExcelParsed }) {
   const handleUploadClick = () => {
     fileRef.current.click()
   }
-
+const getCurrentQuarter = () => {
+    const month = new Date().getMonth(); // 0 to 11
+    const quarterNum = Math.floor(month / 3) + 1;
+  setSelectedQuarter(`Q${quarterNum}`);
+  };
   type NatureType = "Operating" | "Capex" | "Ad-Hoc";
 
  interface ExpenseRow {
@@ -253,7 +260,40 @@ const handleFileChange = (e) => {
 
 
 
+  const loadExcelFromAssets = async () => {
+    try {
+      const response = await fetch(excel);
+      if (!response.ok) throw new Error("Excel file not found");
 
+      const arrayBuffer = await response.arrayBuffer()
+      const workbook = XLSX.read(arrayBuffer, { type: "array" })
+
+      const sheet0 = workbook.Sheets[workbook.SheetNames[0]]
+      const sheet1 = workbook.Sheets[workbook.SheetNames[1]]
+      const sheet2 = workbook.Sheets[workbook.SheetNames[2]]
+
+      const result = {
+        sheet0: sheet0 ? await parseSheet(sheet0, "Sheet 0") : null,
+        sheet1: sheet1 ? await parseSheet(sheet1, "Sheet 1") : null,
+        sheet2: sheet2 ? await parseSheet(sheet2, "Sheet 2") : null,
+      }
+
+      console.log("Parsed Sheets Separately:", result)
+
+      setExcelData(result)
+      onExcelParsed?.(result)
+    } catch (error) {
+      console.error("Excel loading failed:", error)
+    }
+  }
+
+  // ===============================
+  // AUTO LOAD ON APP START
+  // ===============================
+  useEffect(() => {
+    loadExcelFromAssets()
+    getCurrentQuarter()
+  }, [])
 
 
   return (
@@ -278,7 +318,7 @@ const handleFileChange = (e) => {
              {quarter} <ChevronDown size={14} />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align="start" className="bg-black text-white shadow-lg">
             {["Q1", "Q2", "Q3", "Q4"].map((q) => (
               <DropdownMenuItem
                 key={q}
