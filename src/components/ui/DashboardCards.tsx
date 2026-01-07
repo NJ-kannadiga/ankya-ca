@@ -61,10 +61,12 @@ export function DashboardCards({ data }: DashboardCardsProps) {
       >
         {/* BAR GRAPH */}
         {selectedCard?.data?.length ? (
-          <SpendingByCommitteeBar
-            title={`${selectedCard?.title} – Breakdown`}
-            data={selectedCard.data}
-          />
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 h-[500px]">
+            <SpendingByCommitteeBar
+              title={`${selectedCard?.title} – Breakdown`}
+              data={selectedCard.data}
+            />
+          </div>
         ) : (
           <p className="text-sm text-slate-500">
             No breakdown data available.

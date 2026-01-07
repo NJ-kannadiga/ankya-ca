@@ -152,7 +152,8 @@ return (
       <div className="flex flex-col gap-6">
         <div className="bg-white rounded-xl shadow-sm p-6">
           <SpendPieChart
-            title="Overall Budget Utilization"
+            title="Spending by Project"
+            showlegend={false}
             data={barChartData.map(item => ({
               name: item.name,
               value: item.utilized

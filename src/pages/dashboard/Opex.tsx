@@ -261,7 +261,7 @@ setSheetData(sheet0Rows)
   </div>
 
   {/* RIGHT COLUMN: Bar Chart */}
-  <div className="lg:col-span-2 flex flex-col">
+  <div className="lg:col-span-2 flex flex-col bg-white rounded-xl shadow-sm">
     <SpendingByCommitteeBar
       data={barDataVal}
       title="Spending by Committee"

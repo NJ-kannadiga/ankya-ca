@@ -254,10 +254,12 @@ const ringColor: Record<string, string> = {
   {/* RIGHT — Bar Chart (5/12) */}
   <div className="lg:col-span-5 bg-white border rounded-xl p-6">
     <h3 className="text-sm font-semibold mb-4">Category Breakdown</h3>
-    <SpendingByCommitteeBar
-      title=""
-      data={buildClassification1BarData(sheetData)}
-    />
+    <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 h-[500px]">
+      <SpendingByCommitteeBar
+        title=""
+        data={buildClassification1BarData(sheetData)}
+      />
+    </div>
   </div>
 </div>
 

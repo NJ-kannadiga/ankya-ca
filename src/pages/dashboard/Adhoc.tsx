@@ -201,12 +201,12 @@ return (
            <div className="mt-12 grid grid-cols-1 lg:grid-cols-1 gap-12">
              {/* BAR GRAPH (WIDER) */}
              <div className="lg:col-span-2">
-      <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
-        <SpendingByCommitteeBar
-          title="AD-HOC Distribution"
-          data={barChartData}
-        />
-      </div>
+<div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 h-[500px]">
+  <SpendingByCommitteeBar
+    title="AD-HOC Distribution"
+    data={barChartData}
+  />
+</div>
     </div>
      { excelData.sheet0.rows.length > 0 && <div className="mt-12 grid grid-cols-1 gap-12">
 
