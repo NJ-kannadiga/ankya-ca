@@ -14,27 +14,27 @@ function App() {
   return (
    <Routes>
       {/* <Route path="/" element={<Home />} /> */}
-    {/* <Route path="/dashboard" element={<DashboardLayout />}> */}
-
+   
  <Route path="/" element={<DashboardLayout />}>
         {/* DEFAULT PAGE */}
         <Route index element={<Overview />} />
+ {/* <Route path="/dashboard" element={<DashboardLayout />}> */}
 
         {/* INTERNAL ROUTES */}
-        <Route path="opex" element={<Opex />} />
-        <Route path="capex" element={<Capex />} />
-        <Route path="adhoc" element={<Adhoc />} />
+        <Route path="dashboard/opex" element={<Opex />} />
+        <Route path="dashboard/capex" element={<Capex />} />
+        <Route path="dashboard/adhoc" element={<Adhoc />} />
       </Route>
 
       {/* PLACEHOLDERS */}
-      <Route
+      {/* <Route
         path="/cxp-export"
         element={<div className="p-6">CXP Export – Coming Soon</div>}
       />
       <Route
         path="/ocr"
         element={<div className="p-6">OCR – Coming Soon</div>}
-      />
+      /> */}
     </Routes>
   )
 }
