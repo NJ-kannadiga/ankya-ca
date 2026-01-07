@@ -13,9 +13,10 @@ import Overview from "./pages/dashboard/Overview"
 function App() {
   return (
    <Routes>
-      <Route path="/" element={<Home />} />
-   
- <Route path="/dashboard" element={<DashboardLayout />}>
+      {/* <Route path="/" element={<Home />} /> */}
+    {/* <Route path="/dashboard" element={<DashboardLayout />}> */}
+
+ <Route path="/" element={<DashboardLayout />}>
         {/* DEFAULT PAGE */}
         <Route index element={<Overview />} />
 
