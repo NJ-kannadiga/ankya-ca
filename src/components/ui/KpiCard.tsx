@@ -69,7 +69,9 @@ export function KpiCard({
           <span
             className={`px-2 py-0.5 rounded-full ${percentColor} text-xs font-medium`}
           >
-            {percentValue}
+                         {title.toLowerCase() === "community alert" ? '' : `${percentValue}`}
+
+            {/* {percentValue} */}
           </span>
         )}
 

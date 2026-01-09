@@ -25,7 +25,7 @@ const cards = useMemo(() => {
      // ... default return
   }
 
-  const totalSpent = excelData.sheet0.rows
+  const totalSpent = excelData?.sheet0?.rows
     .filter((r: any) => 
       // Ensure the comparison string is lowercase to match .toLowerCase()
       r.Nature?.toLowerCase() === "ad-hoc" && 
@@ -34,7 +34,7 @@ const cards = useMemo(() => {
     .reduce((sum: number, row: any) => sum + (Number(row["Total Expense Paid"]) || 0), 0);
 
   // Note: Ensure Sheet2 "total" row is also handled safely for casing
-  const approved = excelData.sheet2.rows.find(
+  const approved = excelData?.sheet2?.rows?.find(
     (r: any) => r.Nature?.toLowerCase() === "total"
   )?.Amount || 0;
 
@@ -77,7 +77,7 @@ const barChartData = useMemo(() => {
   }, {});
 
   // 2. Convert the object { "Category": 100 } into array [{ name: "Category", utilized: 100 }]
-  return Object.entries(groupedData).map(([name, utilized]) => ({
+  return Object?.entries(groupedData)?.map(([name, utilized]) => ({
     name,
     utilized: Number((utilized as number).toFixed(2)), // Keep 2 decimal places
   }));

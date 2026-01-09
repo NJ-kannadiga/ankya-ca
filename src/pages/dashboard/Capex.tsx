@@ -33,7 +33,7 @@ const cards1 = useMemo(() => {
     .filter((r: any) => r.Nature?.toLowerCase() === "capex" && r.Quarter === selectedQuarter)
     .reduce((sum: number, row: any) => sum + (Number(row["Total Expense Paid"]) || 0), 0);
 
-  const approved = excelData?.sheet2.rows.find((r: any) => r.Nature?.toLowerCase() === "total")?.Amount || 0;
+  const approved = excelData?.sheet2?.rows?.find((r: any) => r.Nature?.toLowerCase() === "total")?.Amount || 0;
 
   // 2. Derive logic-based values
   const unapprovedAmt = Math.max(0, totalSpent - approved);

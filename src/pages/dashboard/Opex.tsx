@@ -138,7 +138,7 @@ const [sheetData, setSheetData] = useState<any>(null)
       const defaultBudget = { title: "Total Budget Approved", amount: "₹0", totalAmount: 0, data: [] }
       const defaultSpend = { title: "Total Expenditure", amount: "₹0", totalAmount: 0, data: [] }
       const defaultUnspent = { title: "Unspent Balance", amount: "₹0", totalAmount: 0, data: [] }
-      const defaultAlert = { title: "Community Alert", amount: "0/0", percentValue: "0% of total budget", data: [] }
+      const defaultAlert = { title: "Community Alert", amount: "0/0",  data: [] }
       return [defaultBudget, defaultSpend, defaultUnspent, defaultAlert]
     }
 

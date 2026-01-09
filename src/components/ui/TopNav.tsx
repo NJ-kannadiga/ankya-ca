@@ -21,7 +21,7 @@ export function TopNav({ onExcelParsed }) {
   const setSelectedQuarter = useExpenseStore((s) => s.setSelectedQuarter);
   const setExcelData = useExpenseStore((s) => s.setExcelData);
   /* ---------------- STATE ---------------- */
-  const [quarter, setQuarter] = useState("Q1")
+  const [quarter, setQuarter] = useState("Q3")
   const fileRef = useRef(null)
 
   /* ---------------- HANDLERS ---------------- */
@@ -38,7 +38,7 @@ export function TopNav({ onExcelParsed }) {
 const getCurrentQuarter = () => {
     const month = new Date().getMonth(); // 0 to 11
     const quarterNum = Math.floor(month / 3) + 1;
-  setSelectedQuarter(`Q${quarterNum}`);
+  setSelectedQuarter(`Q3`);
   };
   type NatureType = "Operating" | "Capex" | "Ad-Hoc";
 
