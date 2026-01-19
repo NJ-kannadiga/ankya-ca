@@ -33,7 +33,7 @@ const cards1 = useMemo(() => {
     .filter((r: any) => r.Nature?.toLowerCase() === "capex" && r.Quarter === selectedQuarter)
     .reduce((sum: number, row: any) => sum + (Number(row["Total Expense Paid"]) || 0), 0);
 
-  const approved = excelData?.sheet2?.rows?.find((r: any) => r.Nature?.toLowerCase() === "total")?.Amount || 0;
+  const approved = excelData?.sheet2?.rows?.find((r: any) => r.Nature?.toLowerCase() === "total" && r.Quarter === selectedQuarter)?.Amount || 0;
 
   // 2. Derive logic-based values
   const unapprovedAmt = Math.max(0, totalSpent - approved);
@@ -103,7 +103,7 @@ const barChartData = useMemo(() => {
 
   // 2. Map Sheet 2 to the new format, excluding the 'Total' row
   return excelData.sheet2.rows
-    .filter((r: any) => r.Nature?.toLowerCase() !== "total") // Remove "Total" row
+    .filter((r: any) => r.Nature?.toLowerCase() !== "total" && r.Quarter === selectedQuarter) // Remove "Total" row
     .map((r: any) => {
       // Logic: Match Sheet 2 "Nature" key with Sheet 0 "Classification-1" sum
       const categoryName = r.Nature; 
