@@ -145,8 +145,8 @@ const [sheetData, setSheetData] = useState<any>(null)
     const sheet0Rows = excelData.sheet0.rows.filter((res: any) => res.Nature === "Operating" && res.Quarter === selectedQuarter )
     const sheet1Rows = excelData.sheet1.rows
 setSheetData(sheet0Rows)
-    const totalRow = sheet1Rows.find((r: any) => r.Nature?.toLowerCase() === "total")
-    
+    const totalRow = sheet1Rows.find((r: any) => r.Nature?.toLowerCase() === "total" && r.Quarter === selectedQuarter)
+    console.log("Total Row:", totalRow);
     const totalBudgetCard = {
       title: "Total Budget Approved",
       amount: totalRow?.Amount || 0,
@@ -154,7 +154,7 @@ setSheetData(sheet0Rows)
       percentText: null,
       isPositive: true,
       data: sheet1Rows
-        .filter((r: any) => r.Nature?.toLowerCase() !== "total")
+        .filter((r: any) => r.Nature?.toLowerCase() !== "total" && r.Quarter === selectedQuarter)
         .map((r: any) => ({
           name: r.Nature,
           budget: Number(r.Amount || 0),

@@ -1,3 +1,4 @@
+import { useExpenseStore } from "@/store/useExpenseStore"
 import { useMemo, useState } from "react"
 import {
   AreaChart,
@@ -21,6 +22,33 @@ export type ExpenseRow = {
   Classification: string
   "Classification-1": string
   Quarter: string
+}
+
+function getQuarterRange(year: number, quarter: string) {
+  switch (quarter) {
+    case "Q1":
+      return { start: new Date(year, 0, 1), end: new Date(year, 2, 31) }
+    case "Q2":
+      return { start: new Date(year, 3, 1), end: new Date(year, 5, 30) }
+    case "Q3":
+      return { start: new Date(year, 6, 1), end: new Date(year, 8, 30) }
+    case "Q4":
+      return { start: new Date(year, 9, 1), end: new Date(year, 11, 31) }
+    default:
+      return null
+  }
+}
+
+function eachDay(start: Date, end: Date) {
+  const days: Date[] = []
+  const d = new Date(start)
+
+  while (d <= end) {
+    days.push(new Date(d))
+    d.setDate(d.getDate() + 1)
+  }
+
+  return days
 }
 
 function parseDate(dateStr: string) {
@@ -109,50 +137,113 @@ function parsePaymentDate(dateStr?: string | number): Date | null {
   return null
 }
 
+function getFinancialQuarterRange(
+  fyYear: number,
+  quarter: "Q1" | "Q2" | "Q3" | "Q4"
+) {
+  switch (quarter) {
+    case "Q1": // Apr–Jun
+      return {
+        start: new Date(fyYear, 3, 1),
+        end: new Date(fyYear, 5, 30),
+      }
 
-function aggregateData(rows: ExpenseRow[], level: Level) {
+    case "Q2": // Jul–Sep
+      return {
+        start: new Date(fyYear, 6, 1),
+        end: new Date(fyYear, 8, 30),
+      }
+
+    case "Q3": // Oct–Dec
+      return {
+        start: new Date(fyYear, 9, 1),
+        end: new Date(fyYear, 11, 31),
+      }
+
+    case "Q4": // Jan–Mar (NEXT calendar year)
+      return {
+        start: new Date(fyYear + 1, 0, 1),
+        end: new Date(fyYear + 1, 2, 31),
+      }
+  }
+}
+function generateDates(start: Date, end: Date) {
+  const dates: Date[] = []
+  const d = new Date(start)
+
+  while (d <= end) {
+    dates.push(new Date(d))
+    d.setDate(d.getDate() + 1)
+  }
+
+  return dates
+}
+
+function aggregateData(
+  rows: ExpenseRow[],
+  level: Level,
+  selectedQuarter?: "Q1" | "Q2" | "Q3" | "Q4"
+) {
   const map = new Map<string, any>()
 
+  /* ======================
+     DAY VIEW – FORCE QUARTER RANGE
+     ====================== */
+  if (level === "day" && selectedQuarter) {
+    // infer FY year safely from data
+    const validDates = rows
+      .map(r => parsePaymentDate(r["Payment Date"]))
+      .filter(Boolean) as Date[]
+
+    if (validDates.length) {
+      const sample = validDates[0]
+      const fyYear = sample.getMonth() >= 3
+        ? sample.getFullYear()
+        : sample.getFullYear() - 1
+
+      const { start, end } =
+        getFinancialQuarterRange(fyYear, selectedQuarter)
+
+      generateDates(start, end).forEach(date => {
+        const key = date.toISOString().slice(0, 10)
+        map.set(key, {
+          key,
+          label: date.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+          }),
+          value: 0,
+          rows: [],
+        })
+      })
+    }
+  }
+
+  /* ======================
+     MERGE ACTUAL DATA
+     ====================== */
   rows.forEach((r) => {
     const date = parsePaymentDate(r["Payment Date"])
-    if (!date) return // 🚨 skip invalid dates safely
+    if (!date) return
 
     let key = ""
     let label = ""
 
-    // ======================
-    // DAY LEVEL
-    // ======================
     if (level === "day") {
-      // YYYY-MM-DD (safe sortable key)
       key = date.toISOString().slice(0, 10)
-
       label = date.toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
       })
-    }
-
-    // ======================
-    // WEEK LEVEL (ISO-like)
-    // ======================
-    else if (level === "week") {
-      const weekNum = getWeekNumber(date)
+    } else if (level === "week") {
+      const week = getWeekNumber(date)
       const year = date.getFullYear()
-
-      key = `${year}-W${String(weekNum).padStart(2, "0")}`
-      label = `Week ${weekNum}`
-    }
-
-    // ======================
-    // MONTH LEVEL
-    // ======================
-    else {
+      key = `${year}-W${String(week).padStart(2, "0")}`
+      label = `Week ${week}`
+    } else {
       const year = date.getFullYear()
-      const month = date.getMonth() // 0-based
-
+      const month = date.getMonth()
       key = `${year}-${String(month + 1).padStart(2, "0")}`
-
       label = date.toLocaleString("en-IN", {
         month: "short",
         year: "2-digit",
@@ -161,28 +252,25 @@ function aggregateData(rows: ExpenseRow[], level: Level) {
 
     if (!map.has(key)) {
       map.set(key, {
-        key,        // used for sorting
-        label,      // display label
-        value: 0,   // aggregated amount
-        rows: [],   // drill-down rows
+        key,
+        label,
+        value: 0,
+        rows: [],
       })
     }
 
     const group = map.get(key)
-
-    // 🔥 numeric safety (Excel strings / float noise)
     const amount = Number(r["Total Expense Paid"]) || 0
     group.value += amount
     group.rows.push(r)
   })
 
-  // ======================
-  // Sort chronologically
-  // ======================
   return Array.from(map.values()).sort((a, b) =>
     a.key.localeCompare(b.key)
   )
 }
+
+
 
 
 /* ================= UPDATED CUSTOM TOOLTIP ================= */
@@ -233,9 +321,13 @@ function CustomTooltip({ active, payload }: any) {
 
 export function SpendTrendLineChart({ rows }: { rows: ExpenseRow[] }) {
   const [level, setLevel] = useState<Level>("day")
+  const selectedQuarter = useExpenseStore((s) => s.selectedQuarter)
 
-  const data = useMemo(() => aggregateData(rows, level), [rows, level])
-
+const data = useMemo(
+  () => aggregateData(rows, level, selectedQuarter),
+  [rows, level, selectedQuarter]
+)
+console.log("Spend Trend Data:", data, "for Quarter:", selectedQuarter);
   return (
     /* 1. Ensure the outermost container has a height, or use h-full if the parent has a height */
     <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col h-full min-h-[400px]">

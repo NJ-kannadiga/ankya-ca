@@ -69,7 +69,6 @@ const parsedDate = parsePaymentDate(rawDate);
   };
 
 });
-console.log(sheetData,"[][][]")
 
 function generateColumnsFromData(data: any[]) {
   if (!data || !data.length) return []

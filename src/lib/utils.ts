@@ -9,7 +9,7 @@ export function formatINRShort(value: number): string {
   if (value === null || value === undefined || !isFinite(value)) return "0"
 
   // 🔥 remove floating point garbage (Excel / JS noise)
-  console.log("Formatting value as Units:",value );
+  // console.log("Formatting value as Units:",value );
   const cleaned = Math.abs(value) < 0.005 ? 0 : value
 
   const sign = cleaned < 0 ? "-" : ""

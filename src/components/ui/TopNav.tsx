@@ -207,9 +207,9 @@ async function parseSheet(sheet, sheetName) {
       });
 
       // ✅ QUARTER LOGIC
-      const paymentDate = parsePaymentDate(obj["Payment Date"]);
-      const quarter = getQuarterFromDate(paymentDate);
-      if (quarter) obj.Quarter = quarter;
+      // const paymentDate = parsePaymentDate(obj["Payment Date"]);
+      // const quarter = getQuarterFromDate(paymentDate);
+      // if (quarter) obj.Quarter = quarter;
 
       if (hasData) rows.push(obj);
     });
