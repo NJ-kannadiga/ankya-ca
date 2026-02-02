@@ -60,7 +60,7 @@ export function TopNav() {
 
         <div className="leading-tight text-left">
           <p className="text-sm font-medium text-slate-800">
-Gagan Shetty           </p>
+Admin           </p>
           <p className="text-xs text-slate-500">
             Chartered Accountant
           </p>
