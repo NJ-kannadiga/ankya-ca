@@ -200,7 +200,7 @@ return (
       <CommonTable
         title="Capex Composition"
         columns={generateColumnsFromData(excelData?.sheet0?.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex"))}
-        data={generateRowsFromData(excelData?.sheet0?.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex"))}
+        data={generateRowsFromData(excelData?.sheet0?.rows.filter((r: any) => r.Nature?.toLowerCase() == "capex" && r.Quarter === selectedQuarter))}
         onRowClick={(row) => console.log("Clicked:", row)}
       />
     </div>}

@@ -212,8 +212,8 @@ return (
 
       <CommonTable
         title="Ad-Hoc Composition"
-        columns={generateColumnsFromData(excelData.sheet0.rows.filter((r: any) => r.Nature?.toLowerCase() == "ad-hoc"))}
-        data={generateRowsFromData(excelData.sheet0.rows.filter((r: any) => r.Nature?.toLowerCase() == "ad-hoc"))}
+        columns={generateColumnsFromData(excelData.sheet0.rows.filter((r: any) => r.Nature?.toLowerCase() == "ad-hoc" ))}
+        data={generateRowsFromData(excelData.sheet0.rows.filter((r: any) => r.Nature?.toLowerCase() == "ad-hoc" && r.Quarter === selectedQuarter))}
         onRowClick={(row) => console.log("Clicked:", row)}
       />
     </div>}
