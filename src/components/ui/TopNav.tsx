@@ -238,12 +238,27 @@ const handleFileChange = (e) => {
       const sheet0 = workbook.Sheets[workbook.SheetNames[0]];
       const sheet1 = workbook.Sheets[workbook.SheetNames[1]];
       const sheet2 = workbook.Sheets[workbook.SheetNames[2]];
+      const sheet3 = workbook.Sheets[workbook.SheetNames[3]];
+      const sheet4 = workbook.Sheets[workbook.SheetNames[4]];
+const p0 = sheet0 ? await parseSheet(sheet0, "Sheet 0") : null;
+const p1 = sheet1 ? await parseSheet(sheet1, "Sheet 1") : null;
+const p2 = sheet2 ? await parseSheet(sheet2, "Sheet 2") : null;
 
+const mergedRows = [
+  ...(p0?.rows || []),
+  ...(p1?.rows || []),
+  ...(p2?.rows || [])
+];
       const result = {
-        sheet0: sheet0 ? await parseSheet(sheet0, "Sheet 0") : null,
-        sheet1: sheet1 ? await parseSheet(sheet1, "Sheet 1") : null,
-        sheet2: sheet2 ? await parseSheet(sheet2, "Sheet 2") : null,
+     sheet0: {
+    sheetName: "Sheet 0",
+    columns: p0?.columns || [],
+    rows: mergedRows
+  },
+        sheet1: sheet3 ? await parseSheet(sheet3, "Sheet 1") : null,
+        sheet2: sheet4 ? await parseSheet(sheet4, "Sheet 2") : null,
       };
+
 
       console.log("Parsed Sheets Separately:", result);
 
@@ -267,27 +282,29 @@ const handleFileChange = (e) => {
 
       const arrayBuffer = await response.arrayBuffer()
       const workbook = XLSX.read(arrayBuffer, { type: "array" })
+      const sheet0 = workbook.Sheets[workbook.SheetNames[0]];
+      const sheet1 = workbook.Sheets[workbook.SheetNames[1]];
+      const sheet2 = workbook.Sheets[workbook.SheetNames[2]];
+      const sheet3 = workbook.Sheets[workbook.SheetNames[3]];
+      const sheet4 = workbook.Sheets[workbook.SheetNames[4]];
+const p0 = sheet0 ? await parseSheet(sheet0, "Sheet 0") : null;
+const p1 = sheet1 ? await parseSheet(sheet1, "Sheet 1") : null;
+const p2 = sheet2 ? await parseSheet(sheet2, "Sheet 2") : null;
 
-const sheetA = workbook.Sheets[workbook.SheetNames[0]];
-const sheetB = workbook.Sheets[workbook.SheetNames[1]];
-const sheetC = workbook.Sheets[workbook.SheetNames[2]];
-
-const sheet1 = workbook.Sheets[workbook.SheetNames[3]];
-const sheet2 = workbook.Sheets[workbook.SheetNames[4]];
-
-// Parse first 3 sheets and merge
-const parsedSheet0 = [
-  ...(sheetA ? await parseSheet(sheetA, "Sheet 0A") : []),
-  ...(sheetB ? await parseSheet(sheetB, "Sheet 0B") : []),
-  ...(sheetC ? await parseSheet(sheetC, "Sheet 0C") : []),
+const mergedRows = [
+  ...(p0?.rows || []),
+  ...(p1?.rows || []),
+  ...(p2?.rows || [])
 ];
-
-// Parse remaining sheets normally
-const result = {
-  sheet0: parsedSheet0.length ? parsedSheet0 : null,
-  sheet1: sheet1 ? await parseSheet(sheet1, "Sheet 1") : null,
-  sheet2: sheet2 ? await parseSheet(sheet2, "Sheet 2") : null,
-};
+      const result = {
+    sheet0: {
+    sheetName: "Sheet 0",
+    columns: p0?.columns || [],
+    rows: mergedRows
+  },
+        sheet1: sheet3 ? await parseSheet(sheet3, "Sheet 1") : null,
+        sheet2: sheet4 ? await parseSheet(sheet4, "Sheet 2") : null,
+      };
 
       console.log("Parsed Sheets Separately:", result)
 
