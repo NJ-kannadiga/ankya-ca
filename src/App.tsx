@@ -3,6 +3,7 @@ import Dashboard from "./pages/Dashboard"
 // import Clients from "./pages/Clients"
 // import Reports from "./pages/Reports"
 import Home from "./pages/Home"
+import Login from "./pages/Login"
 import Opex from "./pages/dashboard/Opex"
 import Capex from "./pages/dashboard/Capex"
 import Adhoc from "./pages/dashboard/Adhoc"
@@ -12,18 +13,19 @@ import Overview from "./pages/dashboard/Overview"
 
 function App() {
   return (
-   <Routes>
+    <Routes>
+      <Route path="/" element={<Login />} />
       {/* <Route path="/" element={<Home />} /> */}
-   
- <Route path="/" element={<DashboardLayout />}>
+
+      <Route path="/dashboard" element={<DashboardLayout />}>
         {/* DEFAULT PAGE */}
         <Route index element={<Overview />} />
- {/* <Route path="/dashboard" element={<DashboardLayout />}> */}
+        {/* <Route path="/dashboard" element={<DashboardLayout />}> */}
 
         {/* INTERNAL ROUTES */}
-        <Route path="dashboard/opex" element={<Opex />} />
-        <Route path="dashboard/capex" element={<Capex />} />
-        <Route path="dashboard/adhoc" element={<Adhoc />} />
+        <Route path="opex" element={<Opex />} />
+        <Route path="capex" element={<Capex />} />
+        <Route path="adhoc" element={<Adhoc />} />
       </Route>
 
       {/* PLACEHOLDERS */}

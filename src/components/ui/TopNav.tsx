@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useRef, useState,useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 import * as XLSX from "xlsx";
 import { useExpenseStore } from "@/store/useExpenseStore";
 import logo from "@/assets/logo.jpeg"
@@ -21,7 +21,7 @@ export function TopNav({ onExcelParsed }) {
   const setSelectedQuarter = useExpenseStore((s) => s.setSelectedQuarter);
   const setExcelData = useExpenseStore((s) => s.setExcelData);
   /* ---------------- STATE ---------------- */
-  const [quarter, setQuarter] = useState("Q3")
+  const [quarter, setQuarter] = useState("Q4")
   const fileRef = useRef(null)
 
   /* ---------------- HANDLERS ---------------- */
@@ -35,243 +35,243 @@ export function TopNav({ onExcelParsed }) {
   const handleUploadClick = () => {
     fileRef.current.click()
   }
-const getCurrentQuarter = () => {
+  const getCurrentQuarter = () => {
     const month = new Date().getMonth(); // 0 to 11
     const quarterNum = Math.floor(month / 3) + 1;
-  setSelectedQuarter(`Q3`);
+    setSelectedQuarter(`Q4`);
   };
   type NatureType = "Operating" | "Capex" | "Ad-Hoc";
 
- interface ExpenseRow {
-  "Bank Account"?: string;
-  "Payment Date"?: string;
-  "Vendor Name"?: string;
-  "Total Expense Paid": number | string;
-  "Nature": NatureType;
-  "Classification"?: string;
-  "Classification-1"?: string;
-  "Budgeted"?: "Yes" | "No";
-}
+  interface ExpenseRow {
+    "Bank Account"?: string;
+    "Payment Date"?: string;
+    "Vendor Name"?: string;
+    "Total Expense Paid": number | string;
+    "Nature": NatureType;
+    "Classification"?: string;
+    "Classification-1"?: string;
+    "Budgeted"?: "Yes" | "No";
+  }
 
- interface SummaryItem {
-   name: string;
-   value: number;
-}
-interface SummaryItem {
-  name: string;
-  value: number;
-}
+  interface SummaryItem {
+    name: string;
+    value: number;
+  }
+  interface SummaryItem {
+    name: string;
+    value: number;
+  }
   const calculateExpenseSummary = (
     rows: ExpenseRow[]
   ): SummaryItem[] => {
     const totals = {
       Operating: 0,
       Capex: 0,
-    "Ad-Hoc": 0,
-    Total: 0,
-  };
+      "Ad-Hoc": 0,
+      Total: 0,
+    };
 
-  rows.forEach((row) => {
-    const amount = Number(row["Total Expense Paid"]) || 0;
-    const nature = row.Nature;
+    rows.forEach((row) => {
+      const amount = Number(row["Total Expense Paid"]) || 0;
+      const nature = row.Nature;
 
-    totals.Total += amount;
+      totals.Total += amount;
 
-    if (nature === "Operating") {
-      totals.Operating += amount;
-    } else if (nature === "Capex") {
-      totals.Capex += amount;
-    } else if (nature === "Ad-Hoc") {
-      totals["Ad-Hoc"] += amount;
-    }
-  });
+      if (nature === "Operating") {
+        totals.Operating += amount;
+      } else if (nature === "Capex") {
+        totals.Capex += amount;
+      } else if (nature === "Ad-Hoc") {
+        totals["Ad-Hoc"] += amount;
+      }
+    });
 
-  return [
-    { name: "Total", value: totals.Total },
-    { name: "Operating", value: totals.Operating },
-    { name: "Capex", value: totals.Capex },
-    { name: "Ad-Hoc", value: totals["Ad-Hoc"] },
-  ];
-}
-function parsePaymentDate(dateValue?: string | number): Date | null {
-  if (dateValue === null || dateValue === undefined) return null
-
-  /* ===============================
-     CASE 1: Excel serial number
-     =============================== */
-  if (typeof dateValue === "number" && isFinite(dateValue)) {
-    const excelEpoch = new Date(1899, 11, 30)
-    return new Date(excelEpoch.getTime() + dateValue * 86400000)
+    return [
+      { name: "Total", value: totals.Total },
+      { name: "Operating", value: totals.Operating },
+      { name: "Capex", value: totals.Capex },
+      { name: "Ad-Hoc", value: totals["Ad-Hoc"] },
+    ];
   }
+  function parsePaymentDate(dateValue?: string | number): Date | null {
+    if (dateValue === null || dateValue === undefined) return null
 
-  if (typeof dateValue !== "string") return null
-
-  const trimmed = dateValue.trim()
-  if (!trimmed) return null
-
-  /* ===============================
-     CASE 2: DD-MMM-YY (case-insensitive)
-     e.g. 01-jan-25, 01-JAN-25
-     =============================== */
-  if (/[a-zA-Z]/.test(trimmed) && trimmed.includes("-")) {
-    const [dayStr, monStr, yearStr] = trimmed.split("-")
-
-    const monthMap: Record<string, number> = {
-      jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-      jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+    /* ===============================
+       CASE 1: Excel serial number
+       =============================== */
+    if (typeof dateValue === "number" && isFinite(dateValue)) {
+      const excelEpoch = new Date(1899, 11, 30)
+      return new Date(excelEpoch.getTime() + dateValue * 86400000)
     }
 
-    const month = monthMap[monStr.toLowerCase()]
-    const day = Number(dayStr)
-    const year = yearStr.length === 2 ? 2000 + Number(yearStr) : Number(yearStr)
+    if (typeof dateValue !== "string") return null
 
-    if (!isFinite(day) || month === undefined || !isFinite(year)) return null
-    return new Date(year, month, day)
-  }
+    const trimmed = dateValue.trim()
+    if (!trimmed) return null
 
-  /* ===============================
-     CASE 3: DD-MM-YYYY or DD/MM/YYYY
-     =============================== */
-  if (trimmed.includes("-") || trimmed.includes("/")) {
-    const parts = trimmed.split(/[-/]/)
-    if (parts.length === 3) {
-      const [dayStr, monthStr, yearStr] = parts
+    /* ===============================
+       CASE 2: DD-MMM-YY (case-insensitive)
+       e.g. 01-jan-25, 01-JAN-25
+       =============================== */
+    if (/[a-zA-Z]/.test(trimmed) && trimmed.includes("-")) {
+      const [dayStr, monStr, yearStr] = trimmed.split("-")
 
+      const monthMap: Record<string, number> = {
+        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+      }
+
+      const month = monthMap[monStr.toLowerCase()]
       const day = Number(dayStr)
-      const month = Number(monthStr) - 1
-      const year = Number(yearStr)
+      const year = yearStr.length === 2 ? 2000 + Number(yearStr) : Number(yearStr)
 
-      if (!isFinite(day) || !isFinite(month) || !isFinite(year)) return null
+      if (!isFinite(day) || month === undefined || !isFinite(year)) return null
       return new Date(year, month, day)
     }
+
+    /* ===============================
+       CASE 3: DD-MM-YYYY or DD/MM/YYYY
+       =============================== */
+    if (trimmed.includes("-") || trimmed.includes("/")) {
+      const parts = trimmed.split(/[-/]/)
+      if (parts.length === 3) {
+        const [dayStr, monthStr, yearStr] = parts
+
+        const day = Number(dayStr)
+        const month = Number(monthStr) - 1
+        const year = Number(yearStr)
+
+        if (!isFinite(day) || !isFinite(month) || !isFinite(year)) return null
+        return new Date(year, month, day)
+      }
+    }
+
+    return null
   }
 
-  return null
-}
-
-function formatDate(date: Date | null) {
-  return date
-    ? date.toLocaleDateString("en-IN", {
+  function formatDate(date: Date | null) {
+    return date
+      ? date.toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
         year: "numeric",
       })
-    : ""
-}
-
-function getQuarterFromDate(date) {
-  if (!date || isNaN(date)) return null;
-
-  const month = date.getMonth(); // 0 = Jan
-
-  if (month >= 3 && month <= 5) return "Q1"; // Apr–Jun
-  if (month >= 6 && month <= 8) return "Q2"; // Jul–Sep
-  if (month >= 9 && month <= 11) return "Q3"; // Oct–Dec
-  return "Q4"; // Jan–Mar
-}
-
-async function parseSheet(sheet, sheetName) {
-  const sheetData = XLSX.utils.sheet_to_json(sheet, {
-    header: 1,
-    defval: "",
-  });
-
-  if (!sheetData.length) return null;
-
-  const rawHeaders = sheetData[0];
-  const headers = rawHeaders
-    .map((h) => String(h).trim())
-    .filter(Boolean);
-
-  const MAX_ROWS = 5000;
-  const BATCH_SIZE = 100;
-
-  const rows = [];
-  const totalRows = Math.min(sheetData.length - 1, MAX_ROWS);
-
-  for (let i = 1; i <= totalRows; i += BATCH_SIZE) {
-    const batch = sheetData.slice(i, i + BATCH_SIZE);
-
-    batch.forEach((row) => {
-      const obj = {};
-      let hasData = false;
-
-      rawHeaders.forEach((header, colIndex) => {
-        const key = String(header).trim();
-        if (!key) return;
-
-        const value = row[colIndex] ?? "";
-        if (value !== "") hasData = true;
-
-        obj[key] = value;
-      });
-
-      // ✅ QUARTER LOGIC
-      // const paymentDate = parsePaymentDate(obj["Payment Date"]);
-      // const quarter = getQuarterFromDate(paymentDate);
-      // if (quarter) obj.Quarter = quarter;
-
-      if (hasData) rows.push(obj);
-    });
-
-    await new Promise((res) => setTimeout(res, 5));
+      : ""
   }
 
-  return {
-    sheetName,
-    columns: [...headers, "Quarter"],
-    rows,
-  };
-}
+  function getQuarterFromDate(date) {
+    if (!date || isNaN(date)) return null;
 
-const handleFileChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const month = date.getMonth(); // 0 = Jan
 
-  const reader = new FileReader();
+    if (month >= 3 && month <= 5) return "Q1"; // Apr–Jun
+    if (month >= 6 && month <= 8) return "Q2"; // Jul–Sep
+    if (month >= 9 && month <= 11) return "Q3"; // Oct–Dec
+    return "Q4"; // Jan–Mar
+  }
 
-  reader.onload = async (event) => {
-    try {
-      const binaryData = event.target.result;
-      const workbook = XLSX.read(binaryData, { type: "binary" });
+  async function parseSheet(sheet, sheetName) {
+    const sheetData = XLSX.utils.sheet_to_json(sheet, {
+      header: 1,
+      defval: "",
+    });
 
-      const sheet0 = workbook.Sheets[workbook.SheetNames[0]];
-      const sheet1 = workbook.Sheets[workbook.SheetNames[1]];
-      const sheet2 = workbook.Sheets[workbook.SheetNames[2]];
-      const sheet3 = workbook.Sheets[workbook.SheetNames[3]];
-      const sheet4 = workbook.Sheets[workbook.SheetNames[4]];
-const p0 = sheet0 ? await parseSheet(sheet0, "Sheet 0") : null;
-const p1 = sheet1 ? await parseSheet(sheet1, "Sheet 1") : null;
-const p2 = sheet2 ? await parseSheet(sheet2, "Sheet 2") : null;
+    if (!sheetData.length) return null;
 
-const mergedRows = [
-  ...(p0?.rows || []),
-  ...(p1?.rows || []),
-  ...(p2?.rows || [])
-];
-      const result = {
-     sheet0: {
-    sheetName: "Sheet 0",
-    columns: p0?.columns || [],
-    rows: mergedRows
-  },
-        sheet1: sheet3 ? await parseSheet(sheet3, "Sheet 1") : null,
-        sheet2: sheet4 ? await parseSheet(sheet4, "Sheet 2") : null,
-      };
+    const rawHeaders = sheetData[0];
+    const headers = rawHeaders
+      .map((h) => String(h).trim())
+      .filter(Boolean);
 
+    const MAX_ROWS = 5000;
+    const BATCH_SIZE = 100;
 
-      console.log("Parsed Sheets Separately:", result);
+    const rows = [];
+    const totalRows = Math.min(sheetData.length - 1, MAX_ROWS);
 
-      setExcelData(result);
-      onExcelParsed?.(result);
+    for (let i = 1; i <= totalRows; i += BATCH_SIZE) {
+      const batch = sheetData.slice(i, i + BATCH_SIZE);
 
-    } catch (err) {
-      console.error("Excel parsing error:", err);
+      batch.forEach((row) => {
+        const obj = {};
+        let hasData = false;
+
+        rawHeaders.forEach((header, colIndex) => {
+          const key = String(header).trim();
+          if (!key) return;
+
+          const value = row[colIndex] ?? "";
+          if (value !== "") hasData = true;
+
+          obj[key] = value;
+        });
+
+        // ✅ QUARTER LOGIC
+        // const paymentDate = parsePaymentDate(obj["Payment Date"]);
+        // const quarter = getQuarterFromDate(paymentDate);
+        // if (quarter) obj.Quarter = quarter;
+
+        if (hasData) rows.push(obj);
+      });
+
+      await new Promise((res) => setTimeout(res, 5));
     }
-  };
 
-  reader.readAsBinaryString(file);
-};
+    return {
+      sheetName,
+      columns: [...headers, "Quarter"],
+      rows,
+    };
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+      try {
+        const binaryData = event.target.result;
+        const workbook = XLSX.read(binaryData, { type: "binary" });
+
+        const sheet0 = workbook.Sheets[workbook.SheetNames[0]];
+        const sheet1 = workbook.Sheets[workbook.SheetNames[1]];
+        const sheet2 = workbook.Sheets[workbook.SheetNames[2]];
+        const sheet3 = workbook.Sheets[workbook.SheetNames[3]];
+        const sheet4 = workbook.Sheets[workbook.SheetNames[4]];
+        const p0 = sheet0 ? await parseSheet(sheet0, "Sheet 0") : null;
+        const p1 = sheet1 ? await parseSheet(sheet1, "Sheet 1") : null;
+        const p2 = sheet2 ? await parseSheet(sheet2, "Sheet 2") : null;
+
+        const mergedRows = [
+          ...(p0?.rows || []),
+          ...(p1?.rows || []),
+          ...(p2?.rows || [])
+        ];
+        const result = {
+          sheet0: {
+            sheetName: "Sheet 0",
+            columns: p0?.columns || [],
+            rows: mergedRows
+          },
+          sheet1: sheet3 ? await parseSheet(sheet3, "Sheet 1") : null,
+          sheet2: sheet4 ? await parseSheet(sheet4, "Sheet 2") : null,
+        };
+
+
+        console.log("Parsed Sheets Separately:", result);
+
+        setExcelData(result);
+        onExcelParsed?.(result);
+
+      } catch (err) {
+        console.error("Excel parsing error:", err);
+      }
+    };
+
+    reader.readAsBinaryString(file);
+  };
 
 
 
@@ -287,21 +287,21 @@ const mergedRows = [
       const sheet2 = workbook.Sheets[workbook.SheetNames[2]];
       const sheet3 = workbook.Sheets[workbook.SheetNames[3]];
       const sheet4 = workbook.Sheets[workbook.SheetNames[4]];
-const p0 = sheet0 ? await parseSheet(sheet0, "Sheet 0") : null;
-const p1 = sheet1 ? await parseSheet(sheet1, "Sheet 1") : null;
-const p2 = sheet2 ? await parseSheet(sheet2, "Sheet 2") : null;
+      const p0 = sheet0 ? await parseSheet(sheet0, "Sheet 0") : null;
+      const p1 = sheet1 ? await parseSheet(sheet1, "Sheet 1") : null;
+      const p2 = sheet2 ? await parseSheet(sheet2, "Sheet 2") : null;
 
-const mergedRows = [
-  ...(p0?.rows || []),
-  ...(p1?.rows || []),
-  ...(p2?.rows || [])
-];
+      const mergedRows = [
+        ...(p0?.rows || []),
+        ...(p1?.rows || []),
+        ...(p2?.rows || [])
+      ];
       const result = {
-    sheet0: {
-    sheetName: "Sheet 0",
-    columns: p0?.columns || [],
-    rows: mergedRows
-  },
+        sheet0: {
+          sheetName: "Sheet 0",
+          columns: p0?.columns || [],
+          rows: mergedRows
+        },
         sheet1: sheet3 ? await parseSheet(sheet3, "Sheet 1") : null,
         sheet2: sheet4 ? await parseSheet(sheet4, "Sheet 2") : null,
       };
@@ -343,7 +343,7 @@ const mergedRows = [
         {/* QUARTER DROPDOWN */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-slate-700 focus:outline-none">
-             {quarter} <ChevronDown size={14} />
+            {quarter} <ChevronDown size={14} />
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="start" className="bg-black text-white shadow-lg">
@@ -387,17 +387,24 @@ const mergedRows = [
         </button> */}
 
         {/* PROFILE */}
-        <div className="h-9 w-9 rounded-full bg-green-100 flex items-center justify-center">
-          <User size={18} className="text-green-700" />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-3 focus:outline-none">
+            <div className="h-9 w-9 rounded-full bg-green-100 flex items-center justify-center">
+              <User size={18} className="text-green-700" />
+            </div>
 
-        <div className="leading-tight text-left">
-          <p className="text-sm font-medium text-slate-800">
- Admin           </p>
-          <p className="text-xs text-slate-500">
-            Chartered Accountant
-          </p>
-        </div>
+            <div className="leading-tight text-left">
+              <p className="text-sm font-medium text-slate-800">Admin</p>
+              <p className="text-xs text-slate-500">Chartered Accountant</p>
+            </div>
+            <ChevronDown size={14} className="text-slate-400" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => window.location.href = "/"}>
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )

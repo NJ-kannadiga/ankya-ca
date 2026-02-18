@@ -33,7 +33,7 @@ export function SideNav() {
       {/* whitespace-nowrap is key here to prevent text wrapping and force the parent w-min to expand */}
       <nav className="mt-4 space-y-2 px-2 flex flex-col">
         <NavItem
-          to="/"
+          to="/dashboard"
           icon={<LayoutDashboard size={20} />}
           label="Overview"
           collapsed={collapsed}
